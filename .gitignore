@@ -9,10 +9,6 @@ wheels/
 # Virtual environments
 .venv
 
-# uv
-uv.lock
-.python-version
-
 # jupyter
 .ipynb_checkpoints
 .virtual_documents
