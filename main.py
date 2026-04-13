@@ -109,7 +109,34 @@ payment_method   = st.selectbox(
         "Método de pagamento",
         ["Electronic check", "Mailed check", "Bank transfer (automatic)", "Credit card (automatic)"]
     )
+
+# PREVISOES #
 st.divider()
+if st.button('Gerar Previsões', type='primary', use_container_width=True):
+    
+    input_data = {
+        "gender":            gender,
+        "SeniorCitizen":     senior_citizen,
+        "Partner":           partner,
+        "Dependents":        dependents,
+        "tenure":            tenure,
+        "PhoneService":      phone_service,
+        "MultipleLines":     multiple_lines,
+        "InternetService":   internet_service,
+        "OnlineSecurity":    online_security,
+        "OnlineBackup":      online_backup,
+        "DeviceProtection":  device_protection,
+        "TechSupport":       tech_support,
+        "StreamingTV":       streaming_tv,
+        "StreamingMovies":   streaming_movies,
+        "Contract":          contract,
+        "PaperlessBilling":  paperless_billing,
+        "PaymentMethod":     payment_method,
+        "MonthlyCharges":    monthly_charges,
+        "TotalCharges":      total_charges,
+    }
+    if st.table(input_data):
+        st.success('Ele não é o pai da criança')
 
 # FOOTER #
 st.divider()
