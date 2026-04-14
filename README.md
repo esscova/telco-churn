@@ -73,6 +73,13 @@ encoders.pkl
 ```
 
 ---
+## Interface Streamlit
+
+Caso queira partir para testar diretamente o este classificador, foi desenvolvido uma interface web com Streamlit que, receberá os atributos através de um formulário, fará o preprocessamento com os modelos já treinados anteriormente e exibirá a previsão de Churn com sua probabilidade.
+
+![screenshot](src\assets\screenshot.png)
+
+---
 
 ## Tecnologias Utilizadas
 
@@ -83,15 +90,21 @@ encoders.pkl
 - matplotlib
 - seaborn
 - joblib
+- streamlit
 
 ---
 
 ## Como Executar
 
 1. Clone este repositório
-2. Instale as dependências: `uv sync`
-3. Abra os notebook no Jupyter ou no Google Colab
-4. Execute todas as células em ordem
+2. Crie um ambiente virtual
+3. Instale as dependências: `uv sync`
+4. Abra os notebooks em sua IDE de preferência e execute todas as células em ordem
+5. Caso queira ir diretamente para aplicação web, após `uv sync` execute no terminal:
+    ```bash
+    uv run streamlit run main.py
+    ```
+    A aplicação estará disponível em: http://localhost:8501
 
 ---
 
