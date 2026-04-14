@@ -114,9 +114,11 @@ payment_method   = st.selectbox(
 st.divider()
 if st.button('Gerar Previsões', type='primary', use_container_width=True):
     
+    # inputs
+    senior_value = 1 if senior_citizen == 'Sim' else 0
     input_data = {
         "gender":            gender,
-        "SeniorCitizen":     senior_citizen,
+        "SeniorCitizen":     senior_value,
         "Partner":           partner,
         "Dependents":        dependents,
         "tenure":            tenure,
@@ -135,10 +137,39 @@ if st.button('Gerar Previsões', type='primary', use_container_width=True):
         "MonthlyCharges":    monthly_charges,
         "TotalCharges":      total_charges,
     }
-    if st.table(input_data):
-        st.success('Ele não é o pai da criança')
+    
+    
+    # preprocess
+    X_input = preprocess(input_data, encoders, scaler)
+
+    # pred
+    prediction = model.predict(X_input)[0]
+    probability = model.predict_proba(X_input)[0][1]
+
+    # exibir previsao
+    st.subheader('Resultado')
+
+    if prediction == 1:
+        st.error(f'Alto risco de churn com {probability:.1%} de probabilidade de cancelamento.')
+        st.markdown("""
+           Este cliente tem perfil de cancelamento. 
+                    
+           Considere ações de retenção como ofertas personalizadas ou contato proativo.
+        """, text_alignment='center', )
+    else:
+        st.success(f'Baixo risco de churn com {probability:.1%} de probabilidade de cancelamento. ')
+        st.markdown('Este cliente apresenta baixa probabilidade de cancelar o serviço. ')
+
+    st.space('medium')
+    st.progress(
+        float(probability), 
+        text='Risco de Cancelamento.',
+
+    )
+
+    
 
 # FOOTER #
 st.divider()
-st.caption("Modelo: Regressão Logística treinada no dataset IBM Telco Customer Churn.")
+st.caption("Modelo: Regressão Logística treinada no dataset IBM Telco Customer Churn.", text_alignment='center')
 
