@@ -14,11 +14,8 @@ from sklearn.linear_model import LogisticRegression
 st.set_page_config(
     page_title='Previsões de Cancelamento',
     page_icon='🔮',
-    layout='centered',
+    layout='wide',
 )
-
-st.title('Previsão de Cancelamento de Serviços')
-st.markdown("Preencha os dados do cliente abaixo para saber se ele tem risco de cancelar o serviço.")
 
 # FUNC AUXILIAR #
 ## PREPROCESSING ##
@@ -74,10 +71,17 @@ if not artifacts_ok:
     st.error('Arquivos do modelo não encontrados.')
     st.stop()
 
-# FORMULARIO #
-st.subheader('Dados do Cliente')
+# MAIN #
 
-col1, col2 = st.columns(2)
+## HEADER ##
+with st.container(border=True):
+    st.title('Previsão de Cancelamento de Serviços')
+    st.markdown("Preencha os dados do cliente abaixo para saber se ele tem risco de cancelar o serviço.")
+
+## FORMULARIO DE INPUT ##
+st.subheader('Dados do Cliente', divider='red')
+
+col1, col2, col3 = st.columns(3)
 
 with col1:
     gender          = st.selectbox("Gênero", ["Male", "Female"])
@@ -87,31 +91,35 @@ with col1:
     tenure          = st.slider("Tempo de contrato (meses)", 0, 72, 12)
     phone_service   = st.selectbox("Serviço telefônico?", ["Yes", "No"])
     multiple_lines  = st.selectbox("Múltiplas linhas?", ["No", "Yes", "No phone service"])
-    internet_service = st.selectbox("Serviço de internet", ["DSL", "Fiber optic", "No"])
-    online_security  = st.selectbox("Segurança online?", ["No", "Yes", "No internet service"])
  
 with col2:
+    online_security  = st.selectbox("Segurança online?", ["No", "Yes", "No internet service"])
     online_backup    = st.selectbox("Backup online?", ["No", "Yes", "No internet service"])
     device_protection = st.selectbox("Proteção de dispositivo?", ["No", "Yes", "No internet service"])
     tech_support     = st.selectbox("Suporte técnico?", ["No", "Yes", "No internet service"])
     streaming_tv     = st.selectbox("Streaming TV?", ["No", "Yes", "No internet service"])
     streaming_movies = st.selectbox("Streaming filmes?", ["No", "Yes", "No internet service"])
+
+with col3:
+    internet_service = st.selectbox("Serviço de internet", ["DSL", "Fiber optic", "No"])
     contract         = st.selectbox("Tipo de contrato", ["Month-to-month", "One year", "Two year"])
     paperless_billing = st.selectbox("Fatura sem papel?", ["Yes", "No"])
-    # payment_method   = st.selectbox(
-    #     "Método de pagamento",
-    #     ["Electronic check", "Mailed check", "Bank transfer (automatic)", "Credit card (automatic)"]
-    # )
-    monthly_charges  = st.number_input("Cobranças mensais ($)", min_value=0.0, max_value=200.0, value=65.0, step=0.5)
-    total_charges    = st.number_input("Cobranças totais ($)", min_value=0.0, max_value=10000.0, value=monthly_charges * tenure, step=1.0)
-
-payment_method   = st.selectbox(
+    payment_method   = st.selectbox(
         "Método de pagamento",
         ["Electronic check", "Mailed check", "Bank transfer (automatic)", "Credit card (automatic)"]
     )
+    monthly_charges  = st.number_input("Cobranças mensais ($)", min_value=0.0, max_value=200.0, value=65.0, step=0.5)
+    total_charges    = st.number_input("Cobranças totais ($)", min_value=0.0, max_value=10000.0, value=monthly_charges * tenure, step=1.0)
 
-# PREVISOES #
-st.divider()
+
+
+# payment_method   = st.selectbox(
+#         "Método de pagamento",
+#         ["Electronic check", "Mailed check", "Bank transfer (automatic)", "Credit card (automatic)"]
+#     )
+
+## PREVISOES ##
+st.space()
 if st.button('Gerar Previsões', type='primary', use_container_width=True):
     
     # inputs
@@ -147,7 +155,7 @@ if st.button('Gerar Previsões', type='primary', use_container_width=True):
     probability = model.predict_proba(X_input)[0][1]
 
     # exibir previsao
-    st.subheader('Resultado')
+    st.subheader('Resultado', divider='red')
 
     if prediction == 1:
         st.error(f'Alto risco de churn com {probability:.1%} de probabilidade de cancelamento.')
@@ -158,18 +166,25 @@ if st.button('Gerar Previsões', type='primary', use_container_width=True):
         """, text_alignment='center', )
     else:
         st.success(f'Baixo risco de churn com {probability:.1%} de probabilidade de cancelamento. ')
-        st.markdown('Este cliente apresenta baixa probabilidade de cancelar o serviço. ')
+        st.markdown('Este cliente apresenta baixa probabilidade de cancelar o serviço. ', text_alignment='center')
 
     st.space('medium')
     st.progress(
         float(probability), 
-        text='Risco de Cancelamento.',
+        text='Risco de Cancelamento.', 
 
     )
 
-    
+    # sumario
+    st.space('medium')
+    with st.expander('Dados utilizados na previsão'):
+        display = pd.DataFrame([input_data])
+        display['SeniorCitizen'] = senior_citizen
+
+        st.dataframe(
+            display.T.rename(columns={0:'Valor'}),
+            use_container_width=True
+        )
 
 # FOOTER #
-st.divider()
 st.caption("Modelo: Regressão Logística treinada no dataset IBM Telco Customer Churn.", text_alignment='center')
-
